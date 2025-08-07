@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math Study Site</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input[type="text"] {
+      width: 400px;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: #00aaff;
+      color: white;
+    }
+    iframe {
+      width: 90vw;
+      height: 70vh;
+      margin-top: 20px;
+      border: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Math Study Site</h1>
+
+  <form onsubmit="openInIframe(event)">
+    <input
+      type="text"
+      id="urlInput"
+      placeholder="Enter a website URL"
+      autocomplete="on"
+      value="https://"
+    />
+    <button type="submit">Go</button>
+  </form>
+
+  <iframe id="proxyFrame" src="" hidden></iframe>
+
+  <script>
+    function openInIframe(e) {
+      e.preventDefault();
+      const input = document.getElementById('urlInput');
+      const iframe = document.getElementById('proxyFrame');
+
+      const rawUrl = input.value.trim();
+
+      if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+        alert('Please enter a full URL starting with http:// or https://');
+        return;
+      }
+
+      const encoded = encodeURIComponent(rawUrl);
+      iframe.src = `/proxy?url=${encoded}`;
+      iframe.hidden = false;
+    }
+  </script>
+</body>
+</html>
