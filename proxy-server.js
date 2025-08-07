@@ -7,10 +7,8 @@ const https = require('https');
 const app = express();
 const PORT = 443;
 
-// Disable TLS verification for self-signed targets (not recommended in prod)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-// Load config
 let config;
 try {
   config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
@@ -22,7 +20,6 @@ try {
   process.exit(1);
 }
 
-// Middleware
 app.use(compression());
 app.use(express.static('public'));
 app.use((req, res, next) => {
@@ -31,12 +28,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rate limiting setup
-const RATE_LIMIT = 2; // max requests per URL per IP
-const WINDOW_SIZE = 10 * 1000; // 10 seconds in milliseconds
-const rateLimitMap = new Map(); // key: ip|normalizedUrl, value: array of timestamps
+const RATE_LIMIT = 2; 
+const WINDOW_SIZE = 10 * 1000; 
+const rateLimitMap = new Map(); 
 
-// Rewriting helpers
 function getProxyBase(req) {
   const protocol = req.protocol;
   const host = req.get('host');
@@ -66,7 +61,6 @@ function rewriteUrls(html, baseUrl, proxyBase) {
     return `style="${rewriteCss(css, baseUrl, proxyBase)}"`;
   });
 
-  // Inject JS fetch/XHR interceptor before </body>
   const interceptorScript = `
   <script>
   (function () {
@@ -114,7 +108,6 @@ function rewriteCss(css, baseUrl, proxyBase) {
   });
 }
 
-// Proxy logic with rate limiting on normalized URL (fragment stripped)
 app.get('/proxy', async (req, res) => {
   const ip = req.ip || req.connection.remoteAddress;
   const targetUrlRaw = req.query.url;
@@ -124,7 +117,7 @@ app.get('/proxy', async (req, res) => {
   let normalizedUrl;
   try {
     const parsedUrl = new URL(targetUrlRaw);
-    // Strip fragment (hash) for rate limiting key
+    
     parsedUrl.hash = '';
     normalizedUrl = parsedUrl.href;
   } catch {
@@ -135,7 +128,7 @@ app.get('/proxy', async (req, res) => {
   const now = Date.now();
 
   let timestamps = rateLimitMap.get(key) || [];
-  // Remove outdated timestamps outside WINDOW_SIZE
+  
   timestamps = timestamps.filter(ts => now - ts < WINDOW_SIZE);
 
   if (timestamps.length >= RATE_LIMIT) {
@@ -188,9 +181,10 @@ const httpsOptions = {
   cert: fs.readFileSync('./server.cert'),
 };
 
-// Start HTTPS server
+
 https.createServer(httpsOptions, app).listen(PORT, () => {
-  console.log(`🚀 HTTPS proxy server ready:
+  console.log(`HTTPS proxy server ready:
   - Static: https://localhost:${PORT}/
   - Proxy: https://localhost:${PORT}/proxy?url=...`);
 });
+
