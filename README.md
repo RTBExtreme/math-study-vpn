@@ -15,6 +15,6 @@ npm install express url fs compression https
 
 node proxy-server.js
 
-or
+or run
 
 node proxy-server-nohttps.js
