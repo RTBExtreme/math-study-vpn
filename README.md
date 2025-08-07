@@ -7,8 +7,14 @@ How to run a Math Study VPN server:
 
 Run these commands
 
-$git clone https://github.com/RTBExtreme/math-study-vpn.git
+git clone https://github.com/RTBExtreme/math-study-vpn.git
 
-$npm install express url fs compression https
+npm init -y
 
-$node proxy-server.js
+npm install express url fs compression https
+
+node proxy-server.js
+
+or
+
+node proxy-server-nohttps.js
